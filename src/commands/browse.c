@@ -4,6 +4,8 @@
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define PREVIEW_BYTES 256
 
@@ -94,8 +96,13 @@ nextufs_browse_main(int argc, char **argv)
 	struct nextufs_image img;
 	struct nextufs_node node;
 	int argi = 1;
+	int raw = 0;
 	int rc;
 
+	if (argc > 1 && strcmp(argv[1], "--raw") == 0) {
+		raw = 1;
+		argi++;
+	}
 	if (argc != argi + 1 && argc != argi + 2) {
 		fprintf(stderr, "usage: %s <source> [path]\n", argv[0]);
 		return 1;
@@ -114,8 +121,10 @@ nextufs_browse_main(int argc, char **argv)
 		nextufs_image_close(&img);
 		return 1;
 	}
-	print_inode(&node.inode, node.inode_off, node.inode_no);
-	dump_directory(&img, &node.inode, node.inode_no);
+	if (!raw) {
+		print_inode(&node.inode, node.inode_off, node.inode_no);
+		dump_directory(&img, &node.inode, node.inode_no);
+	}
 	if (argc == argi + 2) {
 		rc = nextufs_node_lookup(&img, argv[argi + 1], 1, &node);
 		if (rc == 0) {
@@ -123,9 +132,26 @@ nextufs_browse_main(int argc, char **argv)
 			size_t got = 0;
 			char linkbuf[4096];
 
-			printf("lookup '%s': inode %u\n", argv[argi + 1], node.inode_no);
-			print_inode(&node.inode, node.inode_off, node.inode_no);
-			if ((node.inode.mode & NEXTUFS_IFMT) == NEXTUFS_IFDIR) {
+			if (!raw) {
+				printf("lookup '%s': inode %u\n", argv[argi + 1], node.inode_no);
+				print_inode(&node.inode, node.inode_off, node.inode_no);
+			}
+			if (raw && (node.inode.mode & NEXTUFS_IFMT) == NEXTUFS_IFREG) {
+				uint8_t *data = malloc((size_t)node.inode.size);
+				size_t all = 0;
+				if (data == NULL || nextufs_inode_read_data(&img, &node.inode, 0,
+				    data, (size_t)node.inode.size, &all) < 0 ||
+				    all != (size_t)node.inode.size) {
+					free(data);
+					nextufs_image_close(&img);
+					return 1;
+				}
+				fwrite(data, 1, all, stdout);
+				free(data);
+			} else if (raw) {
+				nextufs_image_close(&img);
+				return 1;
+			} else if ((node.inode.mode & NEXTUFS_IFMT) == NEXTUFS_IFDIR) {
 				dump_directory(&img, &node.inode, node.inode_no);
 			} else if ((node.inode.mode & NEXTUFS_IFMT) == NEXTUFS_IFLNK) {
 				if (nextufs_inode_readlink(&img, &node.inode, linkbuf,

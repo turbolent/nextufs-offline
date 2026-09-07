@@ -29,20 +29,17 @@ LIB = $(BUILD_DIR)/libnextufs.a
 WRITE_SRCS = src/mutate/dir_mutate.c src/mutate/mutate.c
 WRITE_OBJS = $(WRITE_SRCS:%.c=$(OBJ_DIR)/%.o)
 WRITE_LIB = $(BUILD_DIR)/libnextufs_mutate.a
-COMMAND_SRCS = src/commands/main.c src/commands/mount.c \
-	src/commands/info.c src/commands/browse.c src/commands/fsck.c \
-	src/commands/mkfile.c src/commands/mkimg.c src/commands/resize.c
+COMMAND_SRCS = src/commands/main.c src/commands/mount_stub.c \
+	src/commands/info.c src/commands/browse.c src/commands/mkfile.c
 COMMAND_OBJS = $(COMMAND_SRCS:%.c=$(OBJ_DIR)/%.o)
 STRESS_OBJ = $(OBJ_DIR)/src/commands/stress.o
 TEST_OBJ = $(OBJ_DIR)/tests/nextufs/nextufs_test.o
-FORMAT_OBJS = $(OBJ_DIR)/src/mkimg_format/format.o \
-	$(OBJ_DIR)/src/mkimg_format/format_fsinit.o \
-	$(OBJ_DIR)/src/mkimg_format/format_io.o
+FORMAT_OBJS =
 FSCK_SRCS = alloc_map.c buffer.c byteorder.c device.c dir_repair.c \
 	dir_scan.c driver.c frag_support.c inode_ops.c inode_scan.c operator.c \
 	pass1.c pass1b.c pass2.c pass3.c pass4.c pass5.c session.c setup.c \
 	source.c state.c
-FSCK_OBJS = $(FSCK_SRCS:%.c=$(OBJ_DIR)/src/fsck/%.o)
+FSCK_OBJS =
 PUBLIC_HDRS = include/nextufs_image.h include/nextufs_node.h \
 	include/nextufs_mutate.h include/nextufs_info.h include/nextufs_label.h \
 	include/nextufs_report.h include/nextufs_size.h
@@ -74,8 +71,8 @@ $(WRITE_LIB): $(WRITE_OBJS)
 	ar rcs $@ $(WRITE_OBJS)
 
 nextufs: $(COMMAND_OBJS) $(FORMAT_OBJS) $(FSCK_OBJS) $(LIB) $(WRITE_LIB)
-	$(CC) $(CFLAGS) $(FUSE_CFLAGS) -o $@ $(COMMAND_OBJS) \
-		$(FORMAT_OBJS) $(FSCK_OBJS) $(WRITE_LIB) $(LIB) $(FUSE_LIBS)
+	$(CC) $(CFLAGS) -o $@ $(COMMAND_OBJS) \
+		$(FORMAT_OBJS) $(FSCK_OBJS) $(WRITE_LIB) $(LIB)
 
 nextufs_test: $(TEST_OBJ) $(LIB)
 	$(CC) $(CFLAGS) -o $@ $(TEST_OBJ) $(LIB)
