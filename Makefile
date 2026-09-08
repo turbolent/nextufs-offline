@@ -30,11 +30,14 @@ WRITE_SRCS = src/mutate/dir_mutate.c src/mutate/mutate.c
 WRITE_OBJS = $(WRITE_SRCS:%.c=$(OBJ_DIR)/%.o)
 WRITE_LIB = $(BUILD_DIR)/libnextufs_mutate.a
 COMMAND_SRCS = src/commands/main.c src/commands/mount_stub.c \
-	src/commands/info.c src/commands/browse.c src/commands/mkfile.c
+	src/commands/info.c src/commands/browse.c src/commands/mkfile.c \
+	src/commands/mkimg.c src/commands/resize.c
 COMMAND_OBJS = $(COMMAND_SRCS:%.c=$(OBJ_DIR)/%.o)
 STRESS_OBJ = $(OBJ_DIR)/src/commands/stress.o
 TEST_OBJ = $(OBJ_DIR)/tests/nextufs/nextufs_test.o
-FORMAT_OBJS =
+FORMAT_OBJS = $(OBJ_DIR)/src/mkimg_format/format.o \
+	$(OBJ_DIR)/src/mkimg_format/format_fsinit.o \
+	$(OBJ_DIR)/src/mkimg_format/format_io.o
 FSCK_SRCS = alloc_map.c buffer.c byteorder.c device.c dir_repair.c \
 	dir_scan.c driver.c frag_support.c inode_ops.c inode_scan.c operator.c \
 	pass1.c pass1b.c pass2.c pass3.c pass4.c pass5.c session.c setup.c \
@@ -187,8 +190,7 @@ test-mkimg: all
 	./nextufs info --json $(SCRATCH_DIR)/mkimg-labeled.img >/dev/null
 
 test-resize: all
-	./nextufs resize --help >/dev/null
-	./nextufs resize grow --help >/dev/null
+	sh tests/nextufs/test_resize.sh "$(SCRATCH_DIR)"
 
 test-write: all
 	cp --reflink=auto $(TEST_IMAGE) $(SCRATCH_DIR)/nextufs-write-test.raw
@@ -579,7 +581,8 @@ uninstall:
 
 clean:
 	rm -rf $(BUILD_DIR)
-	rm -f nextufs nextufs_test nextufs_stress \
+	rm -f nextufs nextufs.exe nextufs_test nextufs_test.exe \
+		nextufs_stress nextufs_stress.exe \
 		tests/fsck/tools/corrupt_raw_case
 	rm -f *.o *.a src/commands/*.o src/core/*.o src/mutate/*.o \
 		tests/nextufs/*.o

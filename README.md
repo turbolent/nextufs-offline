@@ -127,6 +127,11 @@ Grow a supported image offline. Bare numbers are interpreted as 1 KiB sectors:
 nextufs resize grow /path/to/source 2097152
 ```
 
+The target may end partway through a cylinder group or filesystem block.
+It must be fragment-aligned and, when it introduces a new cylinder group, large enough to contain that group's metadata.
+For labeled images the target is the final disk-image size;
+for raw UFS images it is the filesystem size.
+
 By default, `mkimg` and `resize grow` enforce the NEXTSTEP/OPENSTEP
 compatibility ceiling of `4294836224` bytes, or `4194176` 1 KiB sectors.
 Use `--force-size` only when intentionally creating or growing beyond that
