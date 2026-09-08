@@ -39,7 +39,13 @@ FSCK_SRCS = alloc_map.c buffer.c byteorder.c device.c dir_repair.c \
 	dir_scan.c driver.c frag_support.c inode_ops.c inode_scan.c operator.c \
 	pass1.c pass1b.c pass2.c pass3.c pass4.c pass5.c session.c setup.c \
 	source.c state.c
+HOST_SYSTEM := $(shell uname -s 2>/dev/null)
+ifeq ($(HOST_SYSTEM),Linux)
+COMMAND_SRCS += src/commands/fsck.c
+FSCK_OBJS = $(FSCK_SRCS:%.c=$(OBJ_DIR)/src/fsck/%.o)
+else
 FSCK_OBJS =
+endif
 PUBLIC_HDRS = include/nextufs_image.h include/nextufs_node.h \
 	include/nextufs_mutate.h include/nextufs_info.h include/nextufs_label.h \
 	include/nextufs_report.h include/nextufs_size.h
