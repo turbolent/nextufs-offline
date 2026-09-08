@@ -19,8 +19,8 @@ export TMPDIR = $(SCRATCH_DIR)
 TEST_IMAGE ?= .scratch/openstep42-base.raw
 FSCK_BIN = ./nextufs fsck
 MKIMG_BIN = ./nextufs mkimg
-FUSE_CFLAGS := $(shell pkg-config --cflags fuse3)
-FUSE_LIBS := $(shell pkg-config --libs fuse3)
+FUSE_CFLAGS =
+FUSE_LIBS =
 LIB_SRCS = src/core/image.c src/core/directory.c src/core/path.c src/core/node.c \
 	src/core/layout.c src/core/alloc.c src/core/label.c src/core/size.c \
 	src/core/source.c src/core/info.c src/core/report.c
