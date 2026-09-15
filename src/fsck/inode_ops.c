@@ -91,7 +91,7 @@ pinode(ino_t ino)
 }
 
 void
-blkerr(ino_t ino, char *s, daddr_t blk)
+blkerr(ino_t ino, char *s, ufs_daddr_t blk)
 {
 	pfatal("%ld %s I=%lu", (long)blk, s, (unsigned long)ino);
 	printf("\n");

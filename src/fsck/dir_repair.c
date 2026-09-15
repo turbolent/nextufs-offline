@@ -230,7 +230,7 @@ makeentry(ino_t parent, ino_t ino, char *name)
 int
 expanddir(DINODE *dp)
 {
-	daddr_t lastbn, newblk;
+	ufs_daddr_t lastbn, newblk;
 	char *cp, firstblk[DIRBLKSIZ];
 
 	lastbn = lblkno(&sblock, dp->di_size);

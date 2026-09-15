@@ -1,9 +1,7 @@
 # nextufs
 
-`nextufs` is a Linux userspace tool for working with NEXTSTEP and OPENSTEP UFS
-filesystems. It provides one command, `nextufs`, with subcommands for inspecting,
-browsing, mounting, checking, repairing, creating, resizing, and modifying disk
-images.
+`nextufs` is a POSIX userspace tool for working with NEXTSTEP and OPENSTEP UFS filesystems.
+It provides one command, `nextufs`, with subcommands for inspecting, browsing, mounting, checking, repairing, creating, resizing, and modifying disk images.
 
 ## Capabilities
 
@@ -98,6 +96,10 @@ nextufs fsck -n /path/to/source
 nextufs fsck -y /path/to/source
 ```
 
+On non-Linux hosts, `fsck` requires an explicit image file:
+device and mount-point checking, and automatic `fstab` scanning, remain Linux-only.
+Keep images unmounted and stop any VM using them before checking or repairing.
+
 Create a labeled NeXT disk image:
 
 ```sh
@@ -172,6 +174,7 @@ Useful entry points:
 make test
 make test-nextufs
 make test-fsck
+make test-fsck-images
 make repair-repair-all
 ```
 
