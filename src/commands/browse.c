@@ -10,6 +10,49 @@
 #define PREVIEW_BYTES 256
 
 static void
+print_record(const struct nextufs_node *node, const char *name, size_t len)
+{
+	const struct nextufs_inode *ino = &node->inode;
+
+	printf("  {\"inode\": %u, \"mode\": %u, \"uid\": %u, \"gid\": %u, "
+	    "\"size\": %" PRIu64 ", \"atime\": %" PRIu32 ", \"mtime\": %" PRIu32 ", \"name\": ",
+	    node->inode_no, ino->mode, ino->uid, ino->gid, ino->size,
+	    ino->atime, ino->mtime);
+	nextufs_report_json_string(stdout, name, len);
+	putchar('}');
+}
+
+static int
+print_entry(const struct nextufs_node *node, const char *name,
+    size_t len, void *ctx_ptr)
+{
+	(void)ctx_ptr;
+	if ((len == 1 && name[0] == '.') ||
+	    (len == 2 && name[0] == '.' && name[1] == '.'))
+		return 0;
+	fputs(",\n", stdout);
+	print_record(node, name, len);
+	return 0;
+}
+
+static int
+browse_json(const struct nextufs_image *img, const char *path)
+{
+	struct nextufs_node node;
+	int rc = nextufs_node_lookup(img, path, 0, &node);
+
+	if (rc < 0)
+		return rc;
+	fputs("[\n", stdout);
+	print_record(&node, ".", 1);
+	if (nextufs_node_is_dir(&node))
+		rc = nextufs_directory_iterate_nodes(img, &node.inode,
+		    print_entry, NULL);
+	fputs("\n]\n", stdout);
+	return rc;
+}
+
+static void
 print_inode(const struct nextufs_inode *ino, off_t off, unsigned inode_no)
 {
 	size_t i;
@@ -97,14 +140,18 @@ nextufs_browse_main(int argc, char **argv)
 	struct nextufs_node node;
 	int argi = 1;
 	int raw = 0;
+	int json = 0;
 	int rc;
 
 	if (argc > 1 && strcmp(argv[1], "--raw") == 0) {
 		raw = 1;
 		argi++;
+	} else if (argc > 1 && strcmp(argv[1], "--json") == 0) {
+		json = 1;
+		argi++;
 	}
 	if (argc != argi + 1 && argc != argi + 2) {
-		fprintf(stderr, "usage: %s <source> [path]\n", argv[0]);
+		fprintf(stderr, "usage: %s [--raw|--json] <source> [path]\n", argv[0]);
 		return 1;
 	}
 	rc = nextufs_image_open_source(&img, argv[argi],
@@ -113,6 +160,14 @@ nextufs_browse_main(int argc, char **argv)
 		nextufs_report_errno(stderr, "browse", "open source",
 		    argv[argi], rc);
 		return 1;
+	}
+	if (json) {
+		const char *path = argc == argi + 2 ? argv[argi + 1] : "/";
+		rc = browse_json(&img, path);
+		if (rc < 0)
+			nextufs_report_errno(stderr, "browse", "inspect path", path, rc);
+		nextufs_image_close(&img);
+		return rc < 0 || ferror(stdout) ? 1 : 0;
 	}
 	rc = nextufs_node_get_root(&img, &node);
 	if (rc < 0) {
@@ -137,7 +192,7 @@ nextufs_browse_main(int argc, char **argv)
 				print_inode(&node.inode, node.inode_off, node.inode_no);
 			}
 			if (raw && (node.inode.mode & NEXTUFS_IFMT) == NEXTUFS_IFREG) {
-				uint8_t *data = malloc((size_t)node.inode.size);
+				uint8_t *data = malloc(node.inode.size ? (size_t)node.inode.size : 1);
 				size_t all = 0;
 				if (data == NULL || nextufs_inode_read_data(&img, &node.inode, 0,
 				    data, (size_t)node.inode.size, &all) < 0 ||
@@ -165,8 +220,10 @@ nextufs_browse_main(int argc, char **argv)
 		} else {
 			nextufs_report_errno(stderr, "browse", "lookup path",
 			    argv[argi + 1], rc);
+			nextufs_image_close(&img);
+			return 1;
 		}
 	}
 	nextufs_image_close(&img);
-	return 0;
+	return ferror(stdout) ? 1 : 0;
 }

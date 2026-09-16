@@ -4,6 +4,7 @@ bindir ?= $(prefix)/bin
 mandir ?= $(prefix)/share/man
 DESTDIR ?=
 INSTALL ?= install
+PYTHON ?= python3
 CFLAGS = -Iinclude -Isrc -O2 -g -std=gnu99 -Wall -Wextra -Werror
 FORMAT_CFLAGS ?= -O2 -g -std=gnu89 -Wall -Wextra
 FORMAT_CPPFLAGS = -DNeXT -DNeXT_MOD -DNeXT_NFS -Isrc/mkimg_format/include -Iinclude \
@@ -53,7 +54,7 @@ PUBLIC_HDRS = include/nextufs_image.h include/nextufs_node.h \
 INTERNAL_HDRS = $(PUBLIC_HDRS) include/nextufs_internal.h
 
 BUILD_TARGETS = all scratch-dir clean install uninstall
-TEST_TARGETS = test test-nextufs test-cli-contract test-fsck test-fsck-images test-mkimg \
+TEST_TARGETS = test test-nextufs test-cli-contract test-media test-fsck test-fsck-images test-mkimg \
 	test-resize test-write test-write-big test-write-grow test-unlink \
 	test-mkdir test-rewrite test-link-symlink test-rmdir test-meta \
 	test-rename test-truncate test-special test-fuse-write test-permissions \
@@ -65,6 +66,9 @@ REPAIR_TARGETS = repair-tools repair-corpus repair-lab repair-smoke \
 .PHONY: $(BUILD_TARGETS) $(TEST_TARGETS) $(REPAIR_TARGETS)
 
 all: scratch-dir $(LIB) $(WRITE_LIB) nextufs nextufs_test
+
+test-media: all
+	NEXTUFS="$(CURDIR)/nextufs" $(PYTHON) -B -m unittest discover -s tests -p test_media.py -v
 
 scratch-dir:
 	mkdir -p $(SCRATCH_DIR)
