@@ -17,6 +17,13 @@ grow_and_check()
 "$NEXTUFS" resize --help >/dev/null
 "$NEXTUFS" resize grow --help >/dev/null
 
+# The primary superblock stays at byte 8192 with 2 KiB fragments too.
+# fs_sblkno * 512 incorrectly addresses byte 4096 for this geometry.
+"$NEXTUFS" mkimg --raw --force-overwrite "$WORK/2k-fragments.raw" 64M 32 4 8192 2048 >/dev/null
+grow_and_check "$WORK/2k-fragments.raw" 73728
+"$NEXTUFS" info "$WORK/2k-fragments.raw" > "$WORK/2k-fragments.info"
+grep -F 'filesystem size                75497472 bytes' "$WORK/2k-fragments.info" >/dev/null
+
 # This formatter gives these raw images 8 MiB groups and 8 x 1 KiB fragments/block.
 # Exercise every tail length, including converting seven free fragments to a block.
 "$NEXTUFS" mkimg --raw --force-overwrite "$WORK/partial.raw" 65M >/dev/null
