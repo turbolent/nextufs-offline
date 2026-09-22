@@ -298,11 +298,15 @@ struct	cg {
 	(fragstoblks((fs), (NBBY * ((fs)->fs_bsize - (sizeof (struct cg))))))
 
 /*
- * Turn file system block numbers into disk block addresses.
- * This maps file system blocks to device size blocks.
+ * Turn fragment addresses into the checker's DEV_BSIZE I/O units.
+ * fs_fsbtodb describes the original device's sector size, which can be
+ * 2048 bytes on CDs even though this checker uses 1024-byte I/O units.
+ * Keep that on-disk geometry intact for cylinder/rotational accounting.
  */
-#define fsbtodb(fs, b)	((b) << (fs)->fs_fsbtodb)
-#define	dbtofsb(fs, b)	((b) >> (fs)->fs_fsbtodb)
+#define fsbtodb(fs, b) \
+	((ufs_daddr_t)((uint64_t)(b) * (fs)->fs_fsize / DEV_BSIZE))
+#define dbtofsb(fs, b) \
+	((ufs_daddr_t)((uint64_t)(b) * DEV_BSIZE / (fs)->fs_fsize))
 
 /*
  * Cylinder group macros to locate things in cylinder groups.

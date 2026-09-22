@@ -54,7 +54,7 @@ PUBLIC_HDRS = include/nextufs_image.h include/nextufs_node.h \
 INTERNAL_HDRS = $(PUBLIC_HDRS) include/nextufs_internal.h
 
 BUILD_TARGETS = all scratch-dir clean install uninstall
-TEST_TARGETS = test test-nextufs test-cli-contract test-media test-fsck test-fsck-images test-mkimg \
+TEST_TARGETS = test test-nextufs test-cli-contract test-media test-fragments test-fsck test-fsck-images test-mkimg \
 	test-resize test-write test-write-big test-write-grow test-unlink \
 	test-mkdir test-rewrite test-link-symlink test-rmdir test-meta \
 	test-rename test-truncate test-special test-fuse-write test-permissions \
@@ -69,6 +69,9 @@ all: scratch-dir $(LIB) $(WRITE_LIB) nextufs nextufs_test
 
 test-media: all
 	NEXTUFS="$(CURDIR)/nextufs" $(PYTHON) -B -m unittest discover -s tests -p test_media.py -v
+
+test-fragments: all
+	sh tests/nextufs/test_fragments.sh "$(SCRATCH_DIR)"
 
 scratch-dir:
 	mkdir -p $(SCRATCH_DIR)
@@ -85,8 +88,8 @@ nextufs: $(COMMAND_OBJS) $(FORMAT_OBJS) $(FSCK_OBJS) $(LIB) $(WRITE_LIB)
 	$(CC) $(CFLAGS) -o $@ $(COMMAND_OBJS) \
 		$(FORMAT_OBJS) $(FSCK_OBJS) $(WRITE_LIB) $(LIB)
 
-nextufs_test: $(TEST_OBJ) $(LIB)
-	$(CC) $(CFLAGS) -o $@ $(TEST_OBJ) $(LIB)
+nextufs_test: $(TEST_OBJ) $(WRITE_LIB) $(LIB)
+	$(CC) $(CFLAGS) -o $@ $(TEST_OBJ) $(WRITE_LIB) $(LIB)
 
 nextufs_stress: $(STRESS_OBJ) $(LIB) $(WRITE_LIB)
 	$(CC) $(CFLAGS) -o $@ $(STRESS_OBJ) $(WRITE_LIB) $(LIB)
@@ -126,7 +129,7 @@ $(OBJ_DIR)/%.o: %.c $(INTERNAL_HDRS)
 
 test: test-nextufs repair-smoke
 
-test-nextufs: all test-mkimg test-resize test-cli-contract
+test-nextufs: all test-mkimg test-resize test-cli-contract test-fragments
 	./nextufs --help >/dev/null
 	./nextufs --version >/dev/null
 	./nextufs info --help >/dev/null

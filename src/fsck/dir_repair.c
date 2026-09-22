@@ -241,7 +241,7 @@ expanddir(DINODE *dp)
 	dp->di_db[lastbn + 1] = dp->di_db[lastbn];
 	dp->di_db[lastbn] = newblk;
 	dp->di_size += sblock.fs_bsize;
-	dp->di_blocks += btodb(sblock.fs_bsize);
+	dp->di_blocks += NSPB(&sblock);
 	getblk(&fileblk, dp->di_db[lastbn + 1],
 	    dblksize(&sblock, dp, lastbn + 1));
 	if (fileblk.b_errs != 0)
@@ -273,7 +273,7 @@ bad:
 	dp->di_db[lastbn] = dp->di_db[lastbn + 1];
 	dp->di_db[lastbn + 1] = 0;
 	dp->di_size -= sblock.fs_bsize;
-	dp->di_blocks -= btodb(sblock.fs_bsize);
+	dp->di_blocks -= NSPB(&sblock);
 	freeblk(newblk, sblock.fs_frag);
 	return (0);
 }

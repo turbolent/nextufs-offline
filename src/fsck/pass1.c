@@ -167,7 +167,7 @@ CheckType:
 			if (!(dp->di_icflags & IC_FASTLINK)) {
 #endif
 				(void)ckinode(dp, &idesc);
-				idesc.id_entryno *= btodb(sblock.fs_fsize);
+				idesc.id_entryno *= NSPF(&sblock);
 				if (dp->di_blocks != idesc.id_entryno) {
 					pwarn("INCORRECT BLOCK COUNT I=%lu "
 					    "(%ld should be %ld)",
