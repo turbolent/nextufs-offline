@@ -51,7 +51,14 @@ Install the unified `nextufs` command:
 make install
 ```
 
-### Windows With Visual Studio 2022
+Override the install prefix or stage into a package root:
+
+```sh
+make prefix="$HOME/.local" install
+DESTDIR=/tmp/pkgroot make install
+```
+
+## Build Windows With Visual Studio Community 2022
 
 Install the **Desktop development with C++** workload (MSVC v143 and a Windows
 10 SDK), then open [nextufs.sln](./nextufs.sln). Build the `Debug|x64` or
@@ -69,13 +76,6 @@ The test executable expects a labeled test image containing the paths checked
 by [tests/nextufs/nextufs_test.c](./tests/nextufs/nextufs_test.c); supply that
 image as its debugger command argument and set `NEXTUFS` to the built
 `nextufs.exe` when launching it outside the solution configuration.
-
-Override the install prefix or stage into a package root:
-
-```sh
-make prefix="$HOME/.local" install
-DESTDIR=/tmp/pkgroot make install
-```
 
 ## Usage
 
