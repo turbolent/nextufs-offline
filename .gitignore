@@ -24,3 +24,12 @@
 /third_party/
 
 /defrag.nextufs/
+
+# Visual Studio Community
+/.vs/
+*.vcxproj.user
+*.aps
+*.exe
+
+# Enforce a “no spaces in filenames” policy
+**\ **

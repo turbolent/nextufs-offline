@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{2D01FA1C-011C-409E-8780-EF5371222C9D}</ProjectGuid>
+    <RootNamespace>nextufs</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)build\vs\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\vs\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>nextufs</TargetName>
+    <LocalDebuggerCommand>$(TargetPath)</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>--help</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;WIN32_LEAN_AND_MEAN;NOMINMAX;_FILE_OFFSET_BITS=64;NeXT=1;NeXT_MOD=1;FASTLINK=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\platform\windows\include;$(ProjectDir)include;$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(ProjectDir)src\platform\windows\include\nextufs_windows_compat.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)%(RelativeDir)%(Filename).obj</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(OutDir)nextufs_core.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <IncrementalLink>true</IncrementalLink>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\commands\browse.c" />
+    <ClCompile Include="src\commands\fsck.c" />
+    <ClCompile Include="src\commands\info.c" />
+    <ClCompile Include="src\commands\main.c" />
+    <ClCompile Include="src\commands\mkfile.c" />
+    <ClCompile Include="src\commands\mkimg.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\mkimg_format;$(ProjectDir)src\mkimg_format\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NeXT_NFS=1;isblock=mkimg_isblock;clrblock=mkimg_clrblock;setblock=mkimg_setblock;swap_superblock=mkimg_swap_superblock;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="src\commands\mount_stub.c" />
+    <ClCompile Include="src\commands\resize.c" />
+    <ClCompile Include="src\fsck\alloc_map.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\buffer.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\byteorder.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\device.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\dir_repair.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\dir_scan.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\driver.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\frag_support.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\inode_ops.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\inode_scan.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\operator.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\pass1.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\pass1b.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\pass2.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\pass3.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\pass4.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\pass5.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\session.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\setup.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\source.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\fsck\state.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\fsck\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\mkimg_format\format.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\mkimg_format\include;$(ProjectDir)src\mkimg_format;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NeXT_NFS=1;isblock=mkimg_isblock;clrblock=mkimg_clrblock;setblock=mkimg_setblock;swap_superblock=mkimg_swap_superblock;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="src\mkimg_format\format_fsinit.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\mkimg_format\include;$(ProjectDir)src\mkimg_format;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NeXT_NFS=1;isblock=mkimg_isblock;clrblock=mkimg_clrblock;setblock=mkimg_setblock;swap_superblock=mkimg_swap_superblock;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="src\mkimg_format\format_io.c">
+      <AdditionalIncludeDirectories>$(ProjectDir)src\mkimg_format\include;$(ProjectDir)src\mkimg_format;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NeXT_NFS=1;isblock=mkimg_isblock;clrblock=mkimg_clrblock;setblock=mkimg_setblock;swap_superblock=mkimg_swap_superblock;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="nextufs_core.vcxproj">
+      <Project>{A702D2A8-F18A-46DF-A883-78CA6CB9B7EE}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\commands\commands.h" />
+    <ClInclude Include="src\mkimg_format\format.h" />
+    <ClInclude Include="src\fsck\fsck.h" />
+    <ClInclude Include="include\nextufs_fsck.h" />
+    <ClInclude Include="src\platform\windows\include\nextufs_windows_compat.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

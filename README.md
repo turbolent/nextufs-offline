@@ -51,6 +51,25 @@ Install the unified `nextufs` command:
 make install
 ```
 
+### Windows With Visual Studio 2022
+
+Install the **Desktop development with C++** workload (MSVC v143 and a Windows
+10 SDK), then open [nextufs.sln](./nextufs.sln). Build the `Debug|x64` or
+`Release|x64` solution configuration. The `nextufs` project is the CLI, and
+`nextufs_test` builds the C test executable. The `nextufs_core` static library
+is shared by both projects.
+
+For source-level debugging, set `nextufs` as the startup project and press
+**F5**. Its default debugger arguments are `--help`; change them under
+**Project Properties → Debugging → Command Arguments** to run a specific
+subcommand. Debug symbols are generated in the Debug configuration.
+
+The Windows project uses the offline mount stub, as in the Makefile build.
+The test executable expects a labeled test image containing the paths checked
+by [tests/nextufs/nextufs_test.c](./tests/nextufs/nextufs_test.c); supply that
+image as its debugger command argument and set `NEXTUFS` to the built
+`nextufs.exe` when launching it outside the solution configuration.
+
 Override the install prefix or stage into a package root:
 
 ```sh
