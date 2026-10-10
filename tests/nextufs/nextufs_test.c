@@ -4,8 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _WIN32
+#include <process.h>
+#else
 #include <sys/wait.h>
 #include <unistd.h>
+#endif
 
 struct expect_name_ctx {
 	const char *target;
@@ -58,6 +62,17 @@ static void
 check_fsck(const char *image)
 {
 	const char *tool = getenv("NEXTUFS");
+#ifdef _WIN32
+	intptr_t status;
+
+	if (tool == NULL)
+		tool = ".\\build\\vs\\x64\\Debug\\nextufs.exe";
+	status = _spawnlp(_P_WAIT, tool, tool, "fsck", "-n", image, NULL);
+	if (status < 0)
+		fail("run fsck failed");
+	if (status != 0)
+		fail("fragment test image failed fsck");
+#else
 	pid_t child;
 	int status;
 
@@ -77,6 +92,7 @@ check_fsck(const char *image)
 	}
 	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 		fail("fragment test image failed fsck");
+#endif
 }
 
 static void

@@ -263,7 +263,7 @@ int fsck_driver_should_return_to_single_user(void);
 			(x)->b_type = BT_UNKNOWN;			\
 			(x)->b_bno = (ufs_daddr_t)-1;			\
 			(x)->b_unp = (union buf_union *)		\
-			   roundup((unsigned long)((x)->b_un_blk), RAW_IO_ALIGNMENT)
+			   roundup((uintptr_t)((x)->b_un_blk), RAW_IO_ALIGNMENT)
 
 #define	dirty(x)	(x)->b_dirty = 1
 #define	inodirty()	inoblk.b_dirty = 1

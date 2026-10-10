@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <dirent.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -110,7 +111,12 @@ nextufs_write_out_fd(int fd, const void *buf, size_t size)
 	size_t done = 0;
 
 	while (done < size) {
-		ssize_t n = write(fd, in + done, size - done);
+		size_t chunk = size - done;
+		ssize_t n;
+
+		if (chunk > INT_MAX)
+			chunk = INT_MAX;
+		n = write(fd, in + done, (unsigned int)chunk);
 
 		if (n < 0) {
 			if (errno == EINTR)

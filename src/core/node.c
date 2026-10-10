@@ -64,7 +64,9 @@ nextufs_node_stat(const struct nextufs_node *node, struct stat *st)
 	st->st_uid = node->inode.uid;
 	st->st_gid = node->inode.gid;
 	st->st_size = (off_t)node->inode.size;
+#ifndef _WIN32
 	st->st_blocks = node->inode.blocks;
+#endif
 	if ((node->inode.mode & NEXTUFS_IFMT) == NEXTUFS_IFCHR ||
 	    (node->inode.mode & NEXTUFS_IFMT) == NEXTUFS_IFBLK)
 		st->st_rdev = (dev_t)node->inode.db[0];

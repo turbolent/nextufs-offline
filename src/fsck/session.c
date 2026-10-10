@@ -197,7 +197,7 @@ blockcheck(char *name, char *nametmp, size_t nametmp_size)
 	strcpy(nametmp, name);
 	if (stat(nametmp, &statb) < 0) {
 		printf("Can't stat %s\n", nametmp);
-		return (0);
+		return (NULL);
 	}
 retry:
 	switch (statb.st_mode & S_IFMT) {
@@ -216,7 +216,7 @@ retry:
 		printf("Can't determine raw device name for %s\n", name);
 	else
 		printf("%s is not block or character device\n", name);
-	return (0);
+	return (NULL);
 }
 
 char *
@@ -244,7 +244,7 @@ rawname(char *cp, char *rawbuf, size_t rawbuf_size)
 
 	(void)rawbuf_size;
 	if (dp == 0)
-		return (0);
+		return (NULL);
 	*dp = 0;
 	(void)strcpy(rawbuf, cp);
 	*dp = '/';
